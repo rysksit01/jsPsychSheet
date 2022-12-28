@@ -1,0 +1,160 @@
+---
+title: "Task name"
+author: "Your name"
+output:
+  html_document:
+    mathjax: null
+    highlight: null
+    theme: null
+    css: jspsych-6.3.1/css/jspsych.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r}
+library(htmltools)
+tagList(
+tags$script(src='https://rysksit01.github.io/jsPsychSheet/experiment/jspsych-6.3.1/jspsych.js'),
+tags$script(src='https://rysksit01.github.io/jsPsychSheet/experiment/jspsych-6.3.1/plugins/jspsych-html-keyboard-response.js'),
+tags$script(src='https://rysksit01.github.io/jsPsychSheet/experiment/jspsych-6.3.1/plugins/jspsych-image-keyboard-response.js'),
+tags$script(src='https://rysksit01.github.io/jsPsychSheet/experiment/jspsych-6.3.1/plugins/jspsych-fullscreen.js'),
+tags$script(src='https://rysksit01.github.io/jsPsychSheet/experiment/jspsych-6.3.1/plugins/jspsych-survey-text.js'),
+tags$script(src="https://rysksit01.github.io/jsPsychSheet/jspsychsheet.js"),
+tags$link(rel="stylesheet",href="https://<rysksit01>.github.io.github.io/jsPsychSheet/jspsychsheet.css")
+)
+
+```
+
+
+```{js}
+/* 全画面表示化 */
+var fullscreen = {
+  type: 'fullscreen',
+  message: '<p>以下のボタンをクリックすると，画面は全画面表示に切り替わります。全画面表示を止めたい場合はEscキーを押してください。</p>',
+  button_label: "全画面表示に切り替え",
+  fullscreen_mode: true
+};
+
+
+
+/* 課題に関するコードを以下に書く。*/
+
+const shuffle = ([...array]) => {
+  for (let i = array.length - 1; i >= 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+// 配列をシャッフルする
+var stim1_list = shuffle(['Dog_6.jpg',
+'Fire_9.jpg', 
+'Fireworks_2.jpg', 
+'Garbage_dump_2.jpg',
+'Lake_9.jpg', 
+'War_8.jpg'])
+var stim2_list = shuffle(['arab1.png', 
+'arab2.png', 
+'arab3.png',
+'arab4.png',
+'arab5.png',
+'arab6.png'])
+
+// stims_practice_2を実際には使う
+const stims_practice_2 =[]
+for (let i = 0; i < 6; i++){
+  var arrVar = { stim1: stim1_list[i], stim2: stim2_list[i] };
+  stims_practice_2.push(arrVar);
+}
+
+// jsPsychの実験部分
+var ent = {   
+    type: 'survey-text',
+     questions: [
+    {prompt: "IDを入力してください", name: 'ID',placeholder: "ID", required: true},
+    {prompt: "パスワードを入力してください", name: 'password',placeholder: "パスワード", required: true}, 
+  ],
+  button_label: '次へ',
+};
+
+var instruct = {   
+    type: 'html-keyboard-response',
+    stimulus:`<p style = "font-size: 48px">` + `<br><br>まず画像が提示されます。` +`<br><br>次にアラビア文字が提示されますので画像は無視して、`+`<br><br>アラビア文字が好ましいか好ましくないかを判断してください。`+ `<br><br>好ましい場合は"e"キーをおし好ましくない場合は"i"を押してください。` +`<br><br>ご理解いただけましたら"y"キーを押して課題に進んでください。` +`</p>` ,
+    choices: ['y'],
+};
+
+var trial_brank_1 = {   
+    type: 'html-keyboard-response',
+    stimulus:'',
+    choices: jsPsych.NO_KEYS,
+    trial_duration: 1000
+}
+
+var trial1 = {
+    type: 'image-keyboard-response',
+    choices: jsPsych.NO_KEYS,
+    stimulus: jsPsych.timelineVariable('stim1'),
+    trial_duration: 100
+}
+
+var trial_brank = {   
+    type: 'html-keyboard-response',
+    stimulus:'',
+    choices: jsPsych.NO_KEYS,
+    trial_duration: 125
+}
+
+var trial2 = {
+    type: 'image-keyboard-response',
+    choices: jsPsych.NO_KEYS,
+    stimulus: jsPsych.timelineVariable('stim2'),
+    trial_duration: 100
+}
+
+var trial3 = {
+    type: 'html-keyboard-response',
+    choices: ['e', 'i'],
+    stimulus: function(){
+        var html = `<div style="position: absolute; left: 0%; top: 10%">` + `<p style = "font-size: 48px">好ましいの場合は'e'</p>` + `</div>`+ `<div style="position: absolute; right: 0%; top: 10%">` + `<p style = "font-size: 48px">好ましくないの場合は'i'</p>` + `</div>'` +`<div style="position: absolute; left: 35%; top: 50%">` +`<img src="jspsych-6.3.0/img/Wall 1.jpg">` + `</div>'`;
+        return html;
+    }
+}
+
+var trial_brank2 = {   
+    type: 'html-keyboard-response',
+    stimulus:'',
+    choices: jsPsych.NO_KEYS,
+    trial_duration: 1000
+}
+
+var block_1p = {
+  timeline: [trial_brank_1,trial1,trial_brank,trial2,trial_brank,trial3,trial_brank2],
+  timeline_variables: stims_practice_2,
+  randomize_order: true,
+};
+
+
+var timeline = [];
+timeline.push(ent);
+timeline.push(instruct);
+timeline.push(block_1p);
+
+jsPsych.init({
+  timeline: timeline,
+  on_finish: function() {
+      jsPsychSheet.uploadData(jsPsych.data.get().csv());
+  }
+});
+
+
+```
+
+
+
+
+
+
+
